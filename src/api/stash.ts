@@ -24,6 +24,7 @@ export interface ScenePaths {
 export interface Scene {
   id: string
   title?: string
+  details?: string | null
   urls?: string[]
   studio?: Studio | null
   performers?: Performer[]
@@ -77,6 +78,7 @@ const MARKER_REEL_QUERY = /* GraphQL */ `
         scene {
           id
           title
+          details
           urls
           studio {
             id

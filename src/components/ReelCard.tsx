@@ -95,56 +95,87 @@ export function ReelCard({ marker, isActive, muted, onActive }: ReelCardProps) {
     }
   }, [isActive])
 
-  const performerSummary = marker.scene?.performers?.map((performer) => performer.name).join(', ')
+  const performers = marker.scene?.performers ?? []
+  const primaryPerformer = performers[0]
+  const performerSummary = performers.map((performer) => performer.name).join(', ')
+  const caption =
+    marker.description ??
+    marker.scene?.details ??
+    performerSummary ??
+    marker.scene?.studio?.name ??
+    'Curated marker'
 
   return (
     <div className="reel-card" ref={containerRef}>
-      {mediaUrl ? (
-        <video
-          ref={videoRef}
-          className="reel-card__media"
-          src={mediaUrl}
-          muted={muted}
-          loop
-          playsInline
-          preload={isActive ? 'auto' : 'metadata'}
-          poster={marker.scene?.paths?.screenshot ?? marker.screenshot}
-        />
-      ) : (
-        <div className="reel-card__placeholder">
-          <span>No media available</span>
-        </div>
-      )}
-
-      <div className="reel-card__overlay">
-        <div className="reel-card__meta">
-          <div className="reel-card__titles">
-            <p className="reel-card__primary-tag">{marker.primary_tag?.name}</p>
-            <h2>{marker.title ?? marker.scene?.title ?? 'Untitled marker'}</h2>
-            <p className="reel-card__scene">{marker.scene?.title}</p>
+      <div className="reel-card__surface">
+        {mediaUrl ? (
+          <video
+            ref={videoRef}
+            className="reel-card__media"
+            src={mediaUrl}
+            muted={muted}
+            loop
+            playsInline
+            preload={isActive ? 'auto' : 'metadata'}
+            poster={marker.scene?.paths?.screenshot ?? marker.screenshot}
+          />
+        ) : (
+          <div className="reel-card__placeholder">
+            <span>No media available</span>
           </div>
+        )}
+
+        <div className="reel-card__progress">
+          <div style={{ transform: `scaleX(${progress || 0})` }} />
+        </div>
+
+        <div className="reel-card__content">
+          <div className="reel-card__profile">
+            <div className="reel-card__avatar">
+              {primaryPerformer?.image_path ? (
+                <img src={primaryPerformer.image_path} alt={primaryPerformer.name} />
+              ) : (
+                <span>{primaryPerformer?.name?.[0] ?? marker.primary_tag?.name?.[0] ?? 'R'}</span>
+              )}
+            </div>
+            <div className="reel-card__profile-info">
+              <p>{primaryPerformer?.name ?? marker.scene?.studio?.name ?? 'Stash Reels'}</p>
+              <span>{marker.primary_tag?.name ?? '@featured'}</span>
+            </div>
+            <button className="reel-card__follow">Follow</button>
+          </div>
+
+          <p className="reel-card__caption">{caption}</p>
+
           <div className="reel-card__details">
-            {performerSummary && <p>{performerSummary}</p>}
-            {marker.scene?.studio && <p>{marker.scene.studio.name}</p>}
             {marker.seconds !== undefined && marker.seconds >= 0 && (
-              <p className="reel-card__timestamp">@ {formatSeconds(marker.seconds)}</p>
+              <span>@{formatSeconds(marker.seconds)}</span>
+            )}
+            {sceneLink && (
+              <a className="reel-card__cta" href={sceneLink} target="_blank" rel="noreferrer">
+                View scene
+              </a>
             )}
           </div>
+
           <div className="reel-card__tags">
-            {marker.tags?.slice(0, 6).map((tag) => (
-              <span key={tag.id}>{tag.name}</span>
+            {marker.tags?.slice(0, 4).map((tag) => (
+              <span key={tag.id}>#{tag.name}</span>
             ))}
           </div>
         </div>
-        {sceneLink && (
-          <a className="reel-card__cta" href={sceneLink} target="_blank" rel="noreferrer">
-            View scene ↗
-          </a>
-        )}
       </div>
 
-      <div className="reel-card__progress">
-        <div style={{ transform: `scaleX(${progress || 0})` }} />
+      <div className="reel-card__actions">
+        <button type="button">❤</button>
+        <span>{(marker.tags?.length ?? 0) * 4 + 12}</span>
+        <button type="button">💬</button>
+        <span>{performers.length}</span>
+        <button type="button">↗</button>
+        <span>Share</span>
+        <button type="button" className="reel-card__sound">
+          {muted ? '🔇' : '🔊'}
+        </button>
       </div>
     </div>
   )
