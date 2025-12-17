@@ -81,6 +81,13 @@ export function ReelCard({ marker, isActive, muted, onActive }: ReelCardProps) {
 
   useEffect(() => {
     const video = videoRef.current
+    if (video) {
+      video.muted = muted
+    }
+  }, [muted])
+
+  useEffect(() => {
+    const video = videoRef.current
     if (!video) {
       return
     }
@@ -117,6 +124,7 @@ export function ReelCard({ marker, isActive, muted, onActive }: ReelCardProps) {
               className="reel-card__media"
               src={mediaUrl}
               muted={muted}
+              autoPlay
               loop
               playsInline
               preload={isActive ? 'auto' : 'metadata'}
