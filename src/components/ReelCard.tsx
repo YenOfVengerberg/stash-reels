@@ -36,6 +36,8 @@ export function ReelCard({ marker, isActive, muted, onActive }: ReelCardProps) {
       return
     }
 
+    const root = element.closest('.reel-feed__scroll') ?? null
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -45,8 +47,8 @@ export function ReelCard({ marker, isActive, muted, onActive }: ReelCardProps) {
         })
       },
       {
-        threshold: [0.5, 0.75, 0.9],
-        rootMargin: '0px 0px -10% 0px',
+        root,
+        threshold: [0.6, 0.75, 0.9],
       },
     )
 
