@@ -83,6 +83,7 @@ export function ReelCard({ marker, isActive, muted, onActive }: ReelCardProps) {
     const video = videoRef.current
     if (video) {
       video.muted = muted
+      video.defaultMuted = muted
     }
   }, [muted])
 
@@ -92,16 +93,33 @@ export function ReelCard({ marker, isActive, muted, onActive }: ReelCardProps) {
       return
     }
 
-    if (isActive) {
+    let cleanup: (() => void) | undefined
+
+    const attemptPlay = () => {
       const playPromise = video.play()
       if (playPromise) {
         playPromise.catch(() => {})
+      }
+    }
+
+    if (isActive) {
+      if (video.readyState >= 2) {
+        attemptPlay()
+      } else {
+        const handleLoaded = () => {
+          attemptPlay()
+        }
+        video.addEventListener('loadeddata', handleLoaded, { once: true })
+        cleanup = () => {
+          video.removeEventListener('loadeddata', handleLoaded)
+        }
       }
     } else {
       video.pause()
       video.currentTime = 0
       setProgress(0)
     }
+    return cleanup
   }, [isActive])
 
   const performers = marker.scene?.performers ?? []
