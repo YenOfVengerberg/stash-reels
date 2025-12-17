@@ -1,0 +1,8 @@
+name: Stash Reels
+description: Instagram-style reels view for markers packaged as a Stash navigation tab.
+version: 0.2.0
+ui:
+  assets:
+    /: .
+  javascript:
+    - stash-reels.mjs
