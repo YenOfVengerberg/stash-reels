@@ -110,60 +110,64 @@ export function ReelCard({ marker, isActive, muted, onActive }: ReelCardProps) {
   return (
     <div className="reel-card" ref={containerRef}>
       <div className="reel-card__surface">
-        {mediaUrl ? (
-          <video
-            ref={videoRef}
-            className="reel-card__media"
-            src={mediaUrl}
-            muted={muted}
-            loop
-            playsInline
-            preload={isActive ? 'auto' : 'metadata'}
-            poster={marker.scene?.paths?.screenshot ?? marker.screenshot}
-          />
-        ) : (
-          <div className="reel-card__placeholder">
-            <span>No media available</span>
+        <div className="reel-card__media-wrapper">
+          {mediaUrl ? (
+            <video
+              ref={videoRef}
+              className="reel-card__media"
+              src={mediaUrl}
+              muted={muted}
+              loop
+              playsInline
+              preload={isActive ? 'auto' : 'metadata'}
+              poster={marker.scene?.paths?.screenshot ?? marker.screenshot}
+            />
+          ) : (
+            <div className="reel-card__placeholder">
+              <span>No media available</span>
+            </div>
+          )}
+
+          <div className="reel-card__progress">
+            <div style={{ transform: `scaleX(${progress || 0})` }} />
           </div>
-        )}
 
-        <div className="reel-card__progress">
-          <div style={{ transform: `scaleX(${progress || 0})` }} />
-        </div>
+          <div className="reel-card__overlay">
+            <div className="reel-card__profile">
+              <div className="reel-card__avatar">
+                {primaryPerformer?.image_path ? (
+                  <img src={primaryPerformer.image_path} alt={primaryPerformer.name} />
+                ) : (
+                  <span>{primaryPerformer?.name?.[0] ?? marker.primary_tag?.name?.[0] ?? 'R'}</span>
+                )}
+              </div>
+              <div className="reel-card__profile-info">
+                <p>{primaryPerformer?.name ?? marker.scene?.studio?.name ?? 'Stash Reels'}</p>
+                <span>{marker.primary_tag?.name ?? '@featured'}</span>
+              </div>
+              <button className="reel-card__follow">Follow</button>
+            </div>
 
-        <div className="reel-card__content">
-          <div className="reel-card__profile">
-            <div className="reel-card__avatar">
-              {primaryPerformer?.image_path ? (
-                <img src={primaryPerformer.image_path} alt={primaryPerformer.name} />
-              ) : (
-                <span>{primaryPerformer?.name?.[0] ?? marker.primary_tag?.name?.[0] ?? 'R'}</span>
+            <div className="reel-card__caption-scroll">
+              <p className="reel-card__caption">{caption}</p>
+            </div>
+
+            <div className="reel-card__details">
+              {marker.seconds !== undefined && marker.seconds >= 0 && (
+                <span>@{formatSeconds(marker.seconds)}</span>
+              )}
+              {sceneLink && (
+                <a className="reel-card__cta" href={sceneLink} target="_blank" rel="noreferrer">
+                  View scene
+                </a>
               )}
             </div>
-            <div className="reel-card__profile-info">
-              <p>{primaryPerformer?.name ?? marker.scene?.studio?.name ?? 'Stash Reels'}</p>
-              <span>{marker.primary_tag?.name ?? '@featured'}</span>
+
+            <div className="reel-card__tags">
+              {marker.tags?.slice(0, 4).map((tag) => (
+                <span key={tag.id}>#{tag.name}</span>
+              ))}
             </div>
-            <button className="reel-card__follow">Follow</button>
-          </div>
-
-          <p className="reel-card__caption">{caption}</p>
-
-          <div className="reel-card__details">
-            {marker.seconds !== undefined && marker.seconds >= 0 && (
-              <span>@{formatSeconds(marker.seconds)}</span>
-            )}
-            {sceneLink && (
-              <a className="reel-card__cta" href={sceneLink} target="_blank" rel="noreferrer">
-                View scene
-              </a>
-            )}
-          </div>
-
-          <div className="reel-card__tags">
-            {marker.tags?.slice(0, 4).map((tag) => (
-              <span key={tag.id}>#{tag.name}</span>
-            ))}
           </div>
         </div>
       </div>
